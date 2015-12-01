@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+row="$(wc --lines < file1 | egrep -o '[0-9]*')"
+
+echo Ecco le righe del file1: $row
+
+rm file2
+COUNTER=1
+
+while [ $COUNTER -le $row ]; do
+
+   echo numero ciclo: $COUNTER
+
+   URL=$( sed -n "$COUNTER"p file1 )
+   URLT=$( sed -n "$COUNTER"p file1-t)
+
+   wget -qO- $URLT | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> file2
+
+   AVA=$( lynx -dump $URL )
+   lynx -dump $URL >> file2
+   let COUNTER=COUNTER+1
+
+done
+
